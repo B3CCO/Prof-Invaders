@@ -19,7 +19,10 @@ public class ProfInvaders extends Application {
     Pane sfondo = new Pane();
     Rectangle eddyNico = new Rectangle(50, 20, Color.GREEN); 
     List<Rectangle> colpi = new ArrayList<>();  
+<<<<<<< HEAD
     List<Rectangle> invasori = new ArrayList<>(); 
+=======
+>>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
     int sX = 225;
  
     int velocitaColpi = 5;  
@@ -31,13 +34,17 @@ public class ProfInvaders extends Application {
 
         eddyNico.setY(470);
         eddyNico.setX(sX);
+<<<<<<< HEAD
         
+=======
+>>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
 
         Scene scena = new Scene(sfondo);
         primaryStage.setScene(scena);
         primaryStage.setTitle("Prof Invaders");
         primaryStage.show();
         
+<<<<<<< HEAD
    	 Rectangle invasore = new Rectangle(50, 30, Color.BLUE);
    	 for(int a=0;a<10;a++) {
    		 int i=a-1;
@@ -54,12 +61,17 @@ public class ProfInvaders extends Application {
    		 
    	 }
         
+=======
+>>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
         
         Timeline muoviColpi = new Timeline(new KeyFrame(Duration.millis(20), e -> MuoviColpi()));
         muoviColpi.setCycleCount(Timeline.INDEFINITE);
         muoviColpi.play();
 
+<<<<<<< HEAD
         
+=======
+>>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
         scena.setOnKeyPressed(e -> TastoPremuto(e));
     }
 
@@ -110,10 +122,18 @@ public class ProfInvaders extends Application {
         
         colpi.removeAll(toRemove);
         sfondo.getChildren().removeAll(toRemove);
+<<<<<<< HEAD
     }
     
+=======
+    }          
+>>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
 
     public static void main(String[] args) {
         launch(args);
     }
+<<<<<<< HEAD
 }  
+=======
+}   
+>>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
