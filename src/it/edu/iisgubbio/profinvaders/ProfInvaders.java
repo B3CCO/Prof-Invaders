@@ -19,10 +19,8 @@ public class ProfInvaders extends Application {
     Pane sfondo = new Pane();
     Rectangle eddyNico = new Rectangle(50, 20, Color.GREEN); 
     List<Rectangle> colpi = new ArrayList<>();  
-<<<<<<< HEAD
     List<Rectangle> invasori = new ArrayList<>(); 
-=======
->>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
+
     int sX = 225;
  
     int velocitaColpi = 5;  
@@ -34,44 +32,44 @@ public class ProfInvaders extends Application {
 
         eddyNico.setY(470);
         eddyNico.setX(sX);
-<<<<<<< HEAD
-        
-=======
->>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
 
         Scene scena = new Scene(sfondo);
         primaryStage.setScene(scena);
         primaryStage.setTitle("Prof Invaders");
         primaryStage.show();
         
-<<<<<<< HEAD
-   	 Rectangle invasore = new Rectangle(50, 30, Color.BLUE);
-   	 for(int a=0;a<10;a++) {
-   		 int i=a-1;
-   		 if(a==0) {
-   			 invasore.setX(50);
-   			 invasore.setY(50);
-   		 }else {
-   			 if(a-i==1) {
-   				 invasore.setX(invasore.getX()+20);
-   			 }
-   		 }
-   		 invasori.add(invasore);
-   		 sfondo.getChildren().add(invasore);
-   		 
-   	 }
+
+        for(int cInvasore=0;cInvasore<15;cInvasore++) {
+        	int riga=cInvasore/5;
+        	int colonna=cInvasore%5;
+        	Rectangle invasore = new Rectangle(50, 30, Color.BLUE);
+        	
+        	invasore.setX(70+colonna*75);
+        	invasore.setY(40+riga*40);
+
+        	invasori.add(invasore);
+        	sfondo.getChildren().add(invasore);
+
+        }
         
-=======
->>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
+        Timeline muoviInvasoriDx = new Timeline(new KeyFrame(Duration.seconds(0.7), e -> MuoviInvasoriDx()));
+        muoviInvasoriDx.setCycleCount(Timeline.INDEFINITE);
+        muoviInvasoriDx.play();
         
-        Timeline muoviColpi = new Timeline(new KeyFrame(Duration.millis(20), e -> MuoviColpi()));
+        Timeline muoviInvasoriSx = new Timeline(new KeyFrame(Duration.seconds(0.7), e -> MuoviInvasoriSx()));
+        muoviInvasoriSx.setCycleCount(Timeline.INDEFINITE);
+        muoviInvasoriSx.play();
+        
+        
+        Timeline muoviInvasoriY = new Timeline(new KeyFrame(Duration.seconds(2), e -> MuoviInvasoriY()));
+        muoviInvasoriY.setCycleCount(Timeline.INDEFINITE);
+        muoviInvasoriY.play();
+
+
+   	    Timeline muoviColpi = new Timeline(new KeyFrame(Duration.millis(20), e -> MuoviColpi()));
         muoviColpi.setCycleCount(Timeline.INDEFINITE);
         muoviColpi.play();
 
-<<<<<<< HEAD
-        
-=======
->>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
         scena.setOnKeyPressed(e -> TastoPremuto(e));
     }
 
@@ -96,8 +94,8 @@ public class ProfInvaders extends Application {
     }
 
     private void Colpo() {
-        
-        Rectangle colpo = new Rectangle(5, 10, Color.RED);
+    	
+    	Rectangle colpo = new Rectangle(5, 10, Color.RED);
         colpo.setX(eddyNico.getX() + 22); 
         colpo.setY(eddyNico.getY());
         
@@ -109,31 +107,62 @@ public class ProfInvaders extends Application {
 
     private void MuoviColpi() {
        
-        List<Rectangle> toRemove = new ArrayList<>();
+        List<Rectangle> fuori = new ArrayList<>();
         for (Rectangle colpo : colpi) {
             colpo.setY(colpo.getY() - velocitaColpi); 
 
             
             if (colpo.getY() < 0) {
-                toRemove.add(colpo);
+                fuori.add(colpo);
             }
         }
 
         
-        colpi.removeAll(toRemove);
-        sfondo.getChildren().removeAll(toRemove);
-<<<<<<< HEAD
+        colpi.removeAll(fuori);
+        sfondo.getChildren().removeAll(fuori);
+
     }
     
-=======
-    }          
->>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
+    private void MuoviInvasoriY() {
+    	List<Rectangle> eliminato = new ArrayList<>();
+    	
+    	for(Rectangle invasore:invasori) {
+    		invasore.setY(invasore.getY()+5);
+    		
+            if (invasore.getY() > 480) {
+                eliminato.add(invasore);
+            }
+    	}
+
+    	invasori.removeAll(eliminato);
+        sfondo.getChildren().removeAll(eliminato);
+    	
+    }
+    
+    private void MuoviInvasoriDx() {
+    	
+    	for(Rectangle invasore:invasori) {
+    		invasore.setX(invasore.getX()+5);
+    		invasore.setX(invasore.getX()+5);
+    	}
+    }
+
+    private void MuoviInvasoriSx() {
+
+    	for(Rectangle invasore:invasori) {
+    		invasore.setX(invasore.getX()-15);
+    		
+    	}
+    }
+
+    /* private void Collisione() {
+    	Bounds 
+    }*/
+
 
     public static void main(String[] args) {
         launch(args);
     }
-<<<<<<< HEAD
+
 }  
-=======
-}   
->>>>>>> 5c855ae09d9c3d98a168f4c3a3b463373a9601f8
+
