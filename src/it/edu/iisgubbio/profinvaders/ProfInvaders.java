@@ -53,13 +53,15 @@ public class ProfInvaders extends Application {
 
 		}
 
-		Timeline muoviInvasoriDx = new Timeline(new KeyFrame(Duration.millis(18), e -> MuoviInvasori()));
+		Timeline muoviInvasoriDx = new Timeline(new KeyFrame(Duration.millis(100), e -> MuoviInvasori()));
 		muoviInvasoriDx.setCycleCount(Timeline.INDEFINITE);
 		muoviInvasoriDx.play();
 				
 		Timeline muoviColpi = new Timeline(new KeyFrame(Duration.millis(20), e -> MuoviColpi()));
 		muoviColpi.setCycleCount(Timeline.INDEFINITE);
 		muoviColpi.play();
+		
+		
 
 		scena.setOnKeyPressed(e -> TastoPremuto(e));
 		
@@ -86,15 +88,24 @@ public class ProfInvaders extends Application {
 		eddyNico.setX(sX);
 	}
 
-	
+	boolean cColpo=true;
 	private void Colpo() {
+		
+		if(cColpo) {
+			Rectangle colpo = new Rectangle(5, 10, Color.RED);
+			colpo.setX(eddyNico.getX() + 22); 
+			colpo.setY(eddyNico.getY());
 
-		Rectangle colpo = new Rectangle(5, 10, Color.RED);
-		colpo.setX(eddyNico.getX() + 22); 
-		colpo.setY(eddyNico.getY());
-
-		colpi.add(colpo);
-		sfondo.getChildren().add(colpo);
+			colpi.add(colpo);
+			sfondo.getChildren().add(colpo);
+			
+			cColpo=false;
+			
+			Timeline timer = new Timeline(new KeyFrame(Duration.seconds(0.2), e -> cColpo = true)); 
+	        timer.setCycleCount(1);
+	        timer.play();
+		}
+		
 
 	}
 
@@ -140,26 +151,26 @@ public class ProfInvaders extends Application {
 		for(Rectangle invasore:invasori) {
 			
 			if(muoviVersoDestra){
-				invasore.setX(invasore.getX()+5);
+				invasore.setX(invasore.getX()+15);
 			}else {
-				invasore.setX(invasore.getX()-5);
+				invasore.setX(invasore.getX()-15);
 				
 			}
 			
 			
 		}
-		if(invasori.get(invasori.size()-1).getX()>=440) {
+		if(!invasori.isEmpty() && invasori.get(invasori.size()-1).getX() >= 440) {
 			muoviVersoDestra=false;
 			for(Rectangle inv:invasori){
-				inv.setY(inv.getY()+3);
+				inv.setY(inv.getY()+20);
 			}
 			
 		}
-		if(invasori.get(0).getX() <= 10) {
+		if(!invasori.isEmpty() && invasori.get(0).getX() <= 10) {
 			muoviVersoDestra = true;
 			for(int a=0; a<invasori.size();a++){
 				Rectangle inv=invasori.get(a);
-				inv.setY(inv.getY()+3);
+				inv.setY(inv.getY()+20);
 			}
 		}
 		
