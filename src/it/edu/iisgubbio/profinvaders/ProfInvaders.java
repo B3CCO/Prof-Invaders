@@ -8,19 +8,21 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProfInvaders extends Application {
 	Pane sfondo = new Pane();
-	Rectangle eddyNico = new Rectangle(50, 20, Color.GREEN); 
-	List<Rectangle> colpi = new ArrayList<>();  
-	List<Rectangle> invasori = new ArrayList<>(); 
+	ImageView eddyNico = new ImageView(); 
+	List<ImageView> colpi = new ArrayList<>();  
+	List<ImageView> invasori = new ArrayList<>(); 
+	List<ImageView> immaginiInvasori=new ArrayList<>();
 
 	int sX = 225;
 
@@ -29,26 +31,40 @@ public class ProfInvaders extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		sfondo.setPrefSize(500, 500);
+		
+		Image imgGiocatore = new Image("file:eddyNico.png"); 
+	    eddyNico.setImage(imgGiocatore);
+	    eddyNico.setFitWidth(70);
+	    eddyNico.setFitHeight(85);
+		
 		sfondo.getChildren().add(eddyNico);
-
-		eddyNico.setY(470);
+		eddyNico.setY(410);
 		eddyNico.setX(sX);
 
 		Scene scena = new Scene(sfondo);
+		scena.getStylesheets().add("it/edu/iisgubbio/profinvaders/profinvaders.css");
+		sfondo.getStyleClass().add("sfondo");
 		primaryStage.setScene(scena);
 		primaryStage.setTitle("Prof Invaders");
 		primaryStage.show();
-
-
+		
+		
 		for(int cInvasore=0;cInvasore<10;cInvasore++) {
 			int riga=cInvasore/5;
 			int colonna=cInvasore%5;
-			Rectangle invasore = new Rectangle(50, 30, Color.BLUE);
 
+			String nomeFile = "invasore" + cInvasore + ".png";
+			
+			Image immagineInvasore = new Image("file:"+nomeFile);
+			ImageView invasore=new ImageView(immagineInvasore);
+			
+			invasore.setFitWidth(60);
+			invasore.setFitHeight(70);
 			invasore.setX(70+colonna*75);
-			invasore.setY(40+riga*40);
+			invasore.setY(10+riga*65);
 
 			invasori.add(invasore);
+			immaginiInvasori.add(invasore);
 			sfondo.getChildren().add(invasore);
 
 		}
@@ -61,8 +77,6 @@ public class ProfInvaders extends Application {
 		muoviColpi.setCycleCount(Timeline.INDEFINITE);
 		muoviColpi.play();
 		
-		
-
 		scena.setOnKeyPressed(e -> TastoPremuto(e));
 		
 	}
@@ -92,9 +106,14 @@ public class ProfInvaders extends Application {
 	private void Colpo() {
 		
 		if(cColpo) {
-			Rectangle colpo = new Rectangle(5, 10, Color.RED);
-			colpo.setX(eddyNico.getX() + 22); 
-			colpo.setY(eddyNico.getY());
+			String percorsoImg = "file:colpo.png"; 
+	        Image img = new Image(percorsoImg);
+	        ImageView colpo = new ImageView(img);
+	        
+	        colpo.setFitWidth(35);
+	        colpo.setFitHeight(40);
+			colpo.setX(eddyNico.getX()+13); 
+			colpo.setY(eddyNico.getY()-17);
 
 			colpi.add(colpo);
 			sfondo.getChildren().add(colpo);
@@ -111,10 +130,10 @@ public class ProfInvaders extends Application {
 
 	private void MuoviColpi() {
 
-		List<Rectangle> fuori = new ArrayList<>();
-				
-		for (int c=0; c< colpi.size();c++) {
-			Rectangle colpo=colpi.get(c);
+		List<ImageView> fuori = new ArrayList<>();
+		
+		for (int c=colpi.size()-1; c>=0 ;c--) {
+			ImageView colpo=colpi.get(c);
 			colpo.setY(colpo.getY() - velocitaColpi); 
 
 
@@ -122,33 +141,34 @@ public class ProfInvaders extends Application {
 				fuori.add(colpo);
 			}
 
-			for(int j=0;j<colpi.size();j++) {
+			Bounds b = colpo.getBoundsInParent();
 
-				Bounds b= colpi.get(j).getBoundsInParent();
+			for(int i=invasori.size()-1;i>=0;i--) {
+				ImageView invasore=invasori.get(i);
+				Bounds b1= invasore.getBoundsInParent();
 
-				for(int i=0;i<invasori.size();i++) {
-					Rectangle invasore=invasori.get(i);
-					Bounds b1= invasore.getBoundsInParent();
-
-					if(b.intersects(b1)) {
-						invasori.remove(i);
-						colpi.remove(j);
-						sfondo.getChildren().remove(invasore);
-						sfondo.getChildren().remove(colpo);
-					}
+				if(b.intersects(b1)) {
+					invasori.remove(i);
+					sfondo.getChildren().remove(invasore);
+					
+					colpi.remove(colpo);
+					sfondo.getChildren().remove(colpo);
+					
+					break;
 				}
-			}         
-		}
+			}
+		}         
 		
 		colpi.removeAll(fuori);
 		sfondo.getChildren().removeAll(fuori);
 	}
 
 	
+
 	boolean muoviVersoDestra = true;
 	private void MuoviInvasori() {
 
-		for(Rectangle invasore:invasori) {
+		for(ImageView invasore:invasori) {
 			
 			if(muoviVersoDestra){
 				invasore.setX(invasore.getX()+15);
@@ -156,21 +176,32 @@ public class ProfInvaders extends Application {
 				invasore.setX(invasore.getX()-15);
 				
 			}
-			
-			
 		}
-		if(!invasori.isEmpty() && invasori.get(invasori.size()-1).getX() >= 440) {
+		
+		double minimo = Double.MAX_VALUE;
+	    double massimo = Double.MIN_VALUE;
+
+	    for (ImageView inv : invasori) {
+	        if (inv.getX() < minimo) {
+	            minimo = inv.getX();
+	        }
+	        if (inv.getX() > massimo) {
+	            massimo = inv.getX();
+	        }
+	    }
+	    
+		if(!invasori.isEmpty() && massimo >= 440) {
 			muoviVersoDestra=false;
-			for(Rectangle inv:invasori){
-				inv.setY(inv.getY()+20);
+			for(ImageView inv:invasori){
+				inv.setY(inv.getY()+25);
 			}
 			
 		}
-		if(!invasori.isEmpty() && invasori.get(0).getX() <= 10) {
+		if(!invasori.isEmpty() && minimo <= 10) {
 			muoviVersoDestra = true;
 			for(int a=0; a<invasori.size();a++){
-				Rectangle inv=invasori.get(a);
-				inv.setY(inv.getY()+20);
+				ImageView inv=invasori.get(a);
+				inv.setY(inv.getY()+25);
 			}
 		}
 		
@@ -180,7 +211,7 @@ public class ProfInvaders extends Application {
 	}
 	
 	private boolean invasoriInFondo() {
-		for (Rectangle invasore : invasori) {
+		for (ImageView invasore : invasori) {
 	        if (invasore.getY() <= 500) {
 	            return false;
 	        }
@@ -194,12 +225,18 @@ public class ProfInvaders extends Application {
 		for(int cInvasore=0;cInvasore<10;cInvasore++) {
 			int riga=cInvasore/5;
 			int colonna=cInvasore%5;
-			Rectangle invasore = new Rectangle(50, 30, Color.BLUE);
 
+			String nomeFile = "invasore" + cInvasore + ".png";
+			Image immagineInvasore = new Image("file:" + nomeFile);
+			ImageView invasore=new ImageView(immagineInvasore);
+			
+			invasore.setFitWidth(60);
+			invasore.setFitHeight(70);
 			invasore.setX(70+colonna*75);
-			invasore.setY(40+riga*40);
+			invasore.setY(10+riga*65);
 
 			invasori.add(invasore);
+			immaginiInvasori.add(invasore);
 			sfondo.getChildren().add(invasore);
 
 		}
