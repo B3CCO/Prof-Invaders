@@ -187,14 +187,15 @@ public class ProfInvaders extends Application {
 				ondate.setText("Ondata vinta! Totali vinte: " + ondateVinte);
 
 				if (ondateVinte >= 5) {
-					Alert vittoria = new Alert(Alert.AlertType.INFORMATION);
-					vittoria.setHeaderText("Hai vinto!");
-					vittoria.setContentText("Hai superato 5 ondate!");
-					vittoria.showAndWait();
+				    javafx.application.Platform.runLater(() -> {
+				        Alert vittoria = new Alert(Alert.AlertType.INFORMATION);
+				        vittoria.setHeaderText("Hai vinto!");
+				        vittoria.setContentText("Hai superato 5 ondate!");
+				        vittoria.showAndWait();
 
-					Timeline chiusura = new Timeline(new KeyFrame(Duration.seconds(1), e2 -> System.exit(0)));
-					chiusura.setCycleCount(1);
-					chiusura.play();
+				        Stage stage = (Stage) sfondo.getScene().getWindow();
+				        stage.close();
+				    });
 				}
 
 				resetInvasori();
