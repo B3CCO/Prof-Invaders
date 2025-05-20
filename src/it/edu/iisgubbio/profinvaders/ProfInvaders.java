@@ -5,8 +5,11 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -25,11 +28,21 @@ public class ProfInvaders extends Application {
 	List<ImageView> immaginiInvasori=new ArrayList<>();
 
 	int sX = 225;
-
 	int velocitaColpi = 5;  
+	
+	Label ondate= new Label();
+	Label obiettivo= new Label("Vinci 5 ondate per vincere");
+	
+	int ondateVinte = 0;
+	boolean ondataInCorso = true;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		GridPane principale = new GridPane();
+		principale.add(obiettivo, 0,0);
+		principale.add(ondate, 0,1);
+		principale.add(sfondo, 0,2,2,1);
+		
 		sfondo.setPrefSize(500, 500);
 		
 		Image imgGiocatore = new Image("file:eddyNico.png"); 
@@ -41,7 +54,7 @@ public class ProfInvaders extends Application {
 		eddyNico.setY(410);
 		eddyNico.setX(sX);
 
-		Scene scena = new Scene(sfondo);
+		Scene scena = new Scene(principale);
 		scena.getStylesheets().add("it/edu/iisgubbio/profinvaders/profinvaders.css");
 		sfondo.getStyleClass().add("sfondo");
 		primaryStage.setScene(scena);
@@ -113,7 +126,7 @@ public class ProfInvaders extends Application {
 	        colpo.setFitWidth(35);
 	        colpo.setFitHeight(40);
 			colpo.setX(eddyNico.getX()+13); 
-			colpo.setY(eddyNico.getY()-17);
+			colpo.setY(eddyNico.getY());
 
 			colpi.add(colpo);
 			sfondo.getChildren().add(colpo);
@@ -125,7 +138,6 @@ public class ProfInvaders extends Application {
 	        timer.play();
 		}
 		
-
 	}
 
 	private void MuoviColpi() {
@@ -163,88 +175,108 @@ public class ProfInvaders extends Application {
 		sfondo.getChildren().removeAll(fuori);
 	}
 
-	
+
 
 	boolean muoviVersoDestra = true;
 	private void MuoviInvasori() {
+		
+		if (invasori.isEmpty()) {
+			if (ondataInCorso) {
+				ondateVinte++;
+				ondataInCorso = false;
+				ondate.setText("Ondata vinta! Totali vinte: " + ondateVinte);
 
-		for(ImageView invasore:invasori) {
-			
-			if(muoviVersoDestra){
-				invasore.setX(invasore.getX()+15);
-			}else {
-				invasore.setX(invasore.getX()-15);
-				
+				if (ondateVinte >= 5) {
+					Alert vittoria = new Alert(Alert.AlertType.INFORMATION);
+					vittoria.setHeaderText("Hai vinto!");
+					vittoria.setContentText("Hai superato 5 ondate!");
+					vittoria.showAndWait();
+					System.exit(0);
+				}
+
+				resetInvasori();
+			}
+			return;
+		}
+
+		for (ImageView invasore : invasori) {
+			if (muoviVersoDestra) {
+				invasore.setX(invasore.getX() + 15);
+			} else {
+				invasore.setX(invasore.getX() - 15);
 			}
 		}
-		
+
 		double minimo = Double.MAX_VALUE;
-	    double massimo = Double.MIN_VALUE;
+		double massimo = Double.MIN_VALUE;
 
-	    for (ImageView inv : invasori) {
-	        if (inv.getX() < minimo) {
-	            minimo = inv.getX();
-	        }
-	        if (inv.getX() > massimo) {
-	            massimo = inv.getX();
-	        }
-	    }
-	    
-		if(!invasori.isEmpty() && massimo >= 440) {
-			muoviVersoDestra=false;
-			for(ImageView inv:invasori){
-				inv.setY(inv.getY()+25);
-			}
-			
+		for (ImageView inv : invasori) {
+			if (inv.getX() < minimo) minimo = inv.getX();
+			if (inv.getX() > massimo) massimo = inv.getX();
 		}
-		if(!invasori.isEmpty() && minimo <= 10) {
+
+		if (massimo >= 440) {
+			muoviVersoDestra = false;
+			for (ImageView inv : invasori) {
+				inv.setY(inv.getY() + 25);
+			}
+		}
+		if (minimo <= 10) {
 			muoviVersoDestra = true;
-			for(int a=0; a<invasori.size();a++){
-				ImageView inv=invasori.get(a);
-				inv.setY(inv.getY()+25);
+			for (ImageView inv : invasori) {
+				inv.setY(inv.getY() + 25);
 			}
 		}
-		
-		if(invasoriInFondo()) {
+
+		if (invasoriRaggiungonoGiocatore()) {
+			ondataInCorso = false;
+			ondate.setText("Ondata persa. Totali vinte: " + ondateVinte);
 			resetInvasori();
 		}
 	}
-	
-	private boolean invasoriInFondo() {
+
+	private boolean invasoriRaggiungonoGiocatore() {
+		double yGiocatoreBottom = eddyNico.getY() + eddyNico.getFitHeight();
+
 		for (ImageView invasore : invasori) {
-	        if (invasore.getY() <= 500) {
-	            return false;
-	        }
-	    }
-		return true;
+			double invasoreBottom = invasore.getY() + invasore.getFitHeight();
+			if (invasoreBottom >= yGiocatoreBottom - 5) { 
+				return true;
+			}
+		}
+		return false;
 	}
-	
+
 	private void resetInvasori() {
+		for (ImageView invasore : invasori) {
+			sfondo.getChildren().remove(invasore);
+		}
+
 		invasori.clear();
-		
-		for(int cInvasore=0;cInvasore<10;cInvasore++) {
-			int riga=cInvasore/5;
-			int colonna=cInvasore%5;
+		immaginiInvasori.clear();
+
+		for (int cInvasore = 0; cInvasore < 10; cInvasore++) {
+			int riga = cInvasore / 5;
+			int colonna = cInvasore % 5;
 
 			String nomeFile = "invasore" + cInvasore + ".png";
 			Image immagineInvasore = new Image("file:" + nomeFile);
-			ImageView invasore=new ImageView(immagineInvasore);
-			
+			ImageView invasore = new ImageView(immagineInvasore);
+
 			invasore.setFitWidth(60);
 			invasore.setFitHeight(70);
-			invasore.setX(70+colonna*75);
-			invasore.setY(10+riga*65);
+			invasore.setX(70 + colonna * 75);
+			invasore.setY(10 + riga * 65);
 
 			invasori.add(invasore);
 			immaginiInvasori.add(invasore);
 			sfondo.getChildren().add(invasore);
-
 		}
-	}
 
+		
+		ondataInCorso = true;
+	}
 	public static void main(String[] args) {
 		launch(args);
 	}
-
-}  
-
+}
