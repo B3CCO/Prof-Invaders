@@ -191,7 +191,10 @@ public class ProfInvaders extends Application {
 					vittoria.setHeaderText("Hai vinto!");
 					vittoria.setContentText("Hai superato 5 ondate!");
 					vittoria.showAndWait();
-					System.exit(0);
+
+					Timeline chiusura = new Timeline(new KeyFrame(Duration.seconds(1), e2 -> System.exit(0)));
+					chiusura.setCycleCount(1);
+					chiusura.play();
 				}
 
 				resetInvasori();
