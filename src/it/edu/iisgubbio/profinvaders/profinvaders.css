@@ -1,3 +1,14 @@
 .sfondo{
 	-fx-background-image:url(corridoio2.jpg);
 }
+.label{
+	-fx-font-family:"Bauhaus 93";
+	-fx-font-weight: bold;
+	-fx-font-size: 20;
+	-fx-text-fill: #3B5998  ;
+}
+.pannelloIstruzioni{
+	-fx-font-family:"Bauhaus 93";
+	-fx-font-size: 17;
+	-fx-text-fill: #4A6D8C ;
+}
